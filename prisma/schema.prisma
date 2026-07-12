@@ -1,0 +1,328 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMINISTRATOR
+  TECHNICIAN
+  REPORTER
+  SUPERVISOR
+}
+
+enum AssetStatus {
+  OPERATIONAL
+  UNDER_MAINTENANCE
+  OUT_OF_SERVICE
+  RETIRED
+}
+
+enum AssetCondition {
+  EXCELLENT
+  GOOD
+  FAIR
+  POOR
+  CRITICAL
+}
+
+enum IssueStatus {
+  REPORTED
+  ASSIGNED
+  INSPECTION_STARTED
+  MAINTENANCE_IN_PROGRESS
+  WAITING_PARTS
+  RESOLVED
+  CLOSED
+  REOPENED
+}
+
+enum IssuePriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+  EMERGENCY
+}
+
+enum MaintenanceType {
+  PREVENTIVE
+  CORRECTIVE
+  PREDICTIVE
+  INSPECTION
+  EMERGENCY
+}
+
+model User {
+  id            String    @id @default(cuid())
+  clerkId       String    @unique
+  email         String    @unique
+  firstName     String?
+  lastName      String?
+  role          UserRole  @default(REPORTER)
+  avatarUrl     String?
+  phone         String?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  assets            Asset[]            @relation("AssignedTechnician")
+  issues            Issue[]            @relation("IssueReporter")
+  assignedIssues    Issue[]            @relation("AssignedTechnician")
+  maintenanceRecords MaintenanceRecord[] @relation("PerformedBy")
+  historyEntries    HistoryEntry[]     @relation("PerformedBy")
+  notifications     Notification[]
+  aiSuggestions     AiSuggestion[]
+
+  @@index([clerkId])
+  @@index([email])
+  @@index([role])
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  icon        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  assets  Asset[]
+  issues  Issue[]
+
+  @@index([name])
+}
+
+model Location {
+  id          String   @id @default(cuid())
+  name        String
+  building    String?
+  floor       String?
+  room        String?
+  latitude    Float?
+  longitude   Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  assets  Asset[]
+
+  @@index([name])
+  @@unique([building, floor, room])
+}
+
+model Asset {
+  id              String        @id @default(cuid())
+  name            String
+  description     String?
+  assetCode       String        @unique
+  qrCodeUrl       String?
+  status          AssetStatus   @default(OPERATIONAL)
+  condition       AssetCondition @default(GOOD)
+  serialNumber    String?
+  model           String?
+  manufacturer    String?
+  purchaseDate    DateTime?
+  purchasePrice   Float?
+  warrantyExpiry  DateTime?
+  lastServiceDate DateTime?
+  nextServiceDate DateTime?
+  imageUrl        String?
+  isDeleted       Boolean       @default(false)
+  deletedAt       DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  locationId  String?
+  location    Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  assignedToId String?
+  assignedTo  User?     @relation("AssignedTechnician", fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  issues             Issue[]
+  maintenanceRecords MaintenanceRecord[]
+  historyEntries     HistoryEntry[]
+  partsUsed          PartsUsed[]
+  attachments        Attachment[]
+
+  @@index([assetCode])
+  @@index([status])
+  @@index([condition])
+  @@index([categoryId])
+  @@index([locationId])
+  @@index([assignedToId])
+  @@index([isDeleted])
+  @@index([createdAt])
+}
+
+model Issue {
+  id              String        @id @default(cuid())
+  issueNumber     String        @unique
+  title           String
+  description     String
+  reporterName    String?
+  reporterEmail   String?
+  priority        IssuePriority @default(MEDIUM)
+  status          IssueStatus   @default(REPORTED)
+  reportedAt      DateTime      @default(now())
+  resolvedAt      DateTime?
+  resolutionNotes String?
+  isPublic         Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  assetId      String
+  asset        Asset      @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  reportedById String
+  reportedBy   User       @relation("IssueReporter", fields: [reportedById], references: [id], onDelete: Cascade)
+  assignedToId String?
+  assignedTo   User?      @relation("AssignedTechnician", fields: [assignedToId], references: [id], onDelete: SetNull)
+  categoryId   String?
+  category     Category?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  maintenanceRecords MaintenanceRecord[]
+  historyEntries     HistoryEntry[]
+  attachments        Attachment[]
+  aiSuggestions      AiSuggestion[]
+
+  @@index([issueNumber])
+  @@index([status])
+  @@index([priority])
+  @@index([assetId])
+  @@index([reportedById])
+  @@index([assignedToId])
+  @@index([createdAt])
+}
+
+model MaintenanceRecord {
+  id              String          @id @default(cuid())
+  type            MaintenanceType @default(CORRECTIVE)
+  title           String
+  description     String?
+  inspectionNotes String?
+  repairNotes     String?
+  workDone        String?
+  cost            Float?
+  workingHours    Float?
+  conditionAfter  AssetCondition?
+  completedAt     DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  assetId      String
+  asset        Asset   @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  issueId      String?
+  issue        Issue?  @relation(fields: [issueId], references: [id], onDelete: SetNull)
+  performedById String
+  performedBy  User    @relation("PerformedBy", fields: [performedById], references: [id], onDelete: Cascade)
+
+  partsUsed     PartsUsed[]
+  attachments   Attachment[]
+
+  @@index([assetId])
+  @@index([issueId])
+  @@index([performedById])
+  @@index([type])
+  @@index([completedAt])
+}
+
+model HistoryEntry {
+  id          String   @id @default(cuid())
+  action      String
+  description String?
+  metadata    String?
+  createdAt   DateTime @default(now())
+
+  assetId      String
+  asset        Asset  @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  issueId      String?
+  issue        Issue? @relation(fields: [issueId], references: [id], onDelete: SetNull)
+  performedById String
+  performedBy  User   @relation("PerformedBy", fields: [performedById], references: [id], onDelete: Cascade)
+
+  @@index([assetId])
+  @@index([issueId])
+  @@index([performedById])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model PartsUsed {
+  id          String   @id @default(cuid())
+  name        String
+  partNumber  String?
+  quantity    Int      @default(1)
+  unitCost    Float?
+  createdAt   DateTime @default(now())
+
+  assetId              String
+  asset                Asset              @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  maintenanceRecordId  String
+  maintenanceRecord    MaintenanceRecord   @relation(fields: [maintenanceRecordId], references: [id], onDelete: Cascade)
+
+  @@index([assetId])
+  @@index([maintenanceRecordId])
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  fileName  String
+  fileUrl   String
+  fileSize  Int?
+  mimeType  String?
+  createdAt DateTime @default(now())
+
+  assetId              String?
+  asset                Asset?             @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  issueId              String?
+  issue                Issue?             @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  maintenanceRecordId  String?
+  maintenanceRecord    MaintenanceRecord? @relation(fields: [maintenanceRecordId], references: [id], onDelete: Cascade)
+
+  @@index([assetId])
+  @@index([issueId])
+  @@index([maintenanceRecordId])
+}
+
+model AiSuggestion {
+  id            String   @id @default(cuid())
+  title         String
+  category      String?
+  priority      String?
+  possibleCauses String?
+  safetyWarnings String?
+  diagnosticChecks String?
+  confidenceScore Float?
+  recurringPatternWarning String?
+  rawResponse   String?
+  wasAccepted   Boolean?
+  createdAt     DateTime @default(now())
+
+  issueId    String
+  issue      Issue  @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  userId     String?
+  user       User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([issueId])
+  @@index([userId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
