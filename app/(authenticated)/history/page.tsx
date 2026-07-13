@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { RevealBlock } from "@/components/shared/motion";
 import { getAuthUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,7 +45,7 @@ export default async function HistoryPage({ searchParams }: PageProps) {
   ]);
 
   return (
-    <div className="space-y-6">
+    <RevealBlock className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">History Timeline</h1>
         <p className="text-muted-foreground">
@@ -97,6 +98,6 @@ export default async function HistoryPage({ searchParams }: PageProps) {
           <HistoryTimeline entries={entries} />
         </CardContent>
       </Card>
-    </div>
+    </RevealBlock>
   );
 }

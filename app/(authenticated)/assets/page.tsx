@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { RevealBlock } from "@/components/shared/motion";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
@@ -90,7 +91,7 @@ export default async function AssetsPage({ searchParams }: AssetsPageProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <RevealBlock className="space-y-6">
       {/* Page Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -217,6 +218,6 @@ export default async function AssetsPage({ searchParams }: AssetsPageProps) {
           ))}
         </div>
       )}
-    </div>
+    </RevealBlock>
   );
 }

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
-import { requireAuth, requireRole } from "@/lib/auth";
+import { requireRole } from "@/lib/auth";
 import { generateQrCode } from "@/lib/qr";
 import { assetSchema } from "@/lib/validators";
 

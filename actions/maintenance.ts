@@ -1,7 +1,7 @@
 "use server";
 
 import { refresh } from "next/cache";
-import { requireAuth, requireRole } from "@/lib/auth";
+import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { maintenanceSchema } from "@/lib/validators";
 import type { Prisma } from "@/app/generated/prisma/client";

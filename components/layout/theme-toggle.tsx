@@ -15,7 +15,12 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    // Defer the mounted flag to the next frame so we never call setState
+    // synchronously inside the effect (which would trigger cascading renders).
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   if (!mounted) {
     return (

@@ -10,6 +10,7 @@ export function PriorityBadge({ priority }: PriorityBadgeProps) {
 
   return (
     <Badge className={`${colorClass} border-0 font-medium`} variant="outline">
+      <span className="size-1.5 rounded-full bg-current" />
       {priority}
     </Badge>
   );

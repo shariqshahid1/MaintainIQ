@@ -21,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/issues/status-badge";
 import { PriorityBadge } from "@/components/issues/priority-badge";
-import { Plus, ArrowUpRight } from "lucide-react";
+import { Plus, ArrowUpRight, AlertCircle } from "lucide-react";
 
 interface Issue {
   id: string;
@@ -129,13 +129,28 @@ export function IssueTable({ issues }: IssueTableProps) {
               </TableCell>
             </TableRow>
           ) : (
-            issues.map((issue) => (
-              <TableRow key={issue.id}>
-                <TableCell className="font-mono text-xs font-medium">
+            issues.map((issue) => {
+              const reporterName =
+                `${issue.reportedBy.firstName ?? ""} ${issue.reportedBy.lastName ?? ""}`.trim() ||
+                "Unknown";
+              const reporterInitial = reporterName.charAt(0).toUpperCase();
+              return (
+              <TableRow
+                key={issue.id}
+                className="group transition-colors hover:bg-muted/50"
+              >
+                <TableCell className="font-mono text-xs font-medium text-muted-foreground">
                   {issue.issueNumber}
                 </TableCell>
-                <TableCell className="max-w-[250px] truncate font-medium">
-                  {issue.title}
+                <TableCell className="max-w-[260px]">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500/15 to-orange-500/15 text-rose-600 dark:text-rose-300">
+                      <AlertCircle className="size-4" />
+                    </div>
+                    <span className="block truncate font-medium">
+                      {issue.title}
+                    </span>
+                  </div>
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {issue.asset.name}
@@ -146,21 +161,27 @@ export function IssueTable({ issues }: IssueTableProps) {
                 <TableCell>
                   <StatusBadge status={issue.status} />
                 </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {issue.reportedBy.firstName} {issue.reportedBy.lastName}
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-semibold text-muted-foreground">
+                      {reporterInitial}
+                    </div>
+                    <span className="text-sm text-muted-foreground">{reporterName}</span>
+                  </div>
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {new Date(issue.createdAt).toLocaleDateString()}
                 </TableCell>
                 <TableCell>
                   <Link href={`/issues/${issue.id}`}>
-                    <Button variant="ghost" size="icon-sm">
+                    <Button variant="ghost" size="icon-sm" className="opacity-0 transition-opacity group-hover:opacity-100">
                       <ArrowUpRight className="size-4" />
                     </Button>
                   </Link>
                 </TableCell>
               </TableRow>
-            ))
+              );
+            })
           )}
         </TableBody>
       </Table>

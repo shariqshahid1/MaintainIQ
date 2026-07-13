@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { STATUS_COLORS, CONDITION_COLORS } from "@/lib/constants";
 import { QrCode, AlertTriangle, MapPin, Calendar, Wrench, History } from "lucide-react";
 import { format } from "date-fns";
+import { Aurora } from "@/components/shared/aurora";
 
 type Props = {
   params: Promise<{ code: string }>;
@@ -104,8 +105,9 @@ export default async function PublicAssetPage({ params }: Props) {
 
   return (
     <div className="bg-muted/30">
-      <header className="border-b border-transparent bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500">
-        <div className="mx-auto flex max-w-4xl items-center gap-3 px-4 py-4 sm:px-6">
+      <header className="grain relative overflow-hidden border-b border-transparent bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500">
+        <Aurora />
+        <div className="relative mx-auto flex max-w-4xl items-center gap-3 px-4 py-4 sm:px-6">
           <QrCode className="size-6 text-white" />
           <span className="text-lg font-semibold text-white">MaintainIQ</span>
           <span className="ml-auto rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white/90 backdrop-blur-sm">

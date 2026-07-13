@@ -2,13 +2,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { Button } from "@/components/ui/button";
+import { Aurora } from "@/components/shared/aurora";
+import { RevealBlock } from "@/components/shared/motion";
 import {
   QrCode,
   Shield,
   Wrench,
   BarChart3,
   Scan,
-  Zap,
   ArrowRight,
   Check,
   Sparkles,
@@ -52,12 +53,11 @@ export default async function LandingPage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative overflow-hidden">
+        <section className="grain relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50 dark:from-indigo-950/20 dark:via-blue-950/20 dark:to-cyan-950/20" />
-          <div className="absolute top-20 left-1/4 size-72 rounded-full bg-indigo-200/30 blur-3xl dark:bg-indigo-900/20" />
-          <div className="absolute bottom-10 right-1/4 size-96 rounded-full bg-blue-200/30 blur-3xl dark:bg-blue-900/20" />
+          <Aurora />
 
-          <div className="relative mx-auto max-w-7xl px-6 py-28 sm:py-36 lg:py-44">
+          <RevealBlock className="relative mx-auto max-w-7xl px-6 py-28 sm:py-36 lg:py-44">
             <div className="text-center">
               <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950/50 dark:text-indigo-300">
                 <Sparkles className="size-4" />
@@ -116,7 +116,7 @@ export default async function LandingPage() {
                 ))}
               </div>
             </div>
-          </div>
+          </RevealBlock>
         </section>
 
         {/* How It Works */}
@@ -130,7 +130,8 @@ export default async function LandingPage() {
                 From the first scan to a verified fix — four steps, zero friction
               </p>
             </div>
-            <div className="grid gap-8 md:grid-cols-4">
+            <RevealBlock>
+              <div className="grid gap-8 md:grid-cols-4">
               {[
                 {
                   step: "01",
@@ -178,6 +179,7 @@ export default async function LandingPage() {
                 </div>
               ))}
             </div>
+          </RevealBlock>
           </div>
         </section>
 
@@ -195,7 +197,8 @@ export default async function LandingPage() {
                 Every feature designed for production maintenance teams
               </p>
             </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <RevealBlock>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {[
                 {
                   icon: QrCode,
@@ -270,6 +273,7 @@ export default async function LandingPage() {
                 </div>
               ))}
             </div>
+          </RevealBlock>
           </div>
         </section>
 

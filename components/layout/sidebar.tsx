@@ -15,7 +15,6 @@ import {
   QrCode,
   ChevronLeft,
   ChevronRight,
-  Zap,
   Sparkles,
 } from "lucide-react";
 import { useState } from "react";

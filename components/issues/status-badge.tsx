@@ -10,6 +10,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
 
   return (
     <Badge className={`${colorClass} border-0 font-medium`} variant="outline">
+      <span className="size-1.5 rounded-full bg-current" />
       {status.replace(/_/g, " ")}
     </Badge>
   );

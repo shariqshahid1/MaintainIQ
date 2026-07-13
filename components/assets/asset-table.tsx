@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { STATUS_COLORS, CONDITION_COLORS } from "@/lib/constants";
-import { Search, ArrowUpDown, ArrowUp, ArrowDown, ExternalLink } from "lucide-react";
+import { Search, ArrowUpDown, ArrowUp, ArrowDown, ExternalLink, Boxes } from "lucide-react";
 
 interface Asset {
   id: string;
@@ -179,29 +179,41 @@ export function AssetTable({ assets }: AssetTableProps) {
             </TableRow>
           ) : (
             filtered.map((asset) => (
-              <TableRow key={asset.id}>
+              <TableRow
+                key={asset.id}
+                className="group transition-colors hover:bg-muted/50"
+              >
                 <TableCell className="font-medium">
-                  <Link
-                    href={`/assets/${asset.id}`}
-                    className="hover:text-primary transition-colors"
-                  >
-                    {asset.name}
-                  </Link>
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500/15 to-blue-500/15 text-indigo-600 dark:text-indigo-300">
+                      <Boxes className="size-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <Link
+                        href={`/assets/${asset.id}`}
+                        className="block truncate font-medium transition-colors hover:text-primary"
+                      >
+                        {asset.name}
+                      </Link>
+                    </div>
+                  </div>
                 </TableCell>
-                <TableCell className="font-mono text-xs">
+                <TableCell className="font-mono text-xs text-muted-foreground">
                   {asset.assetCode}
                 </TableCell>
                 <TableCell>
                   <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[asset.status] ?? ""}`}
+                    className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[asset.status] ?? ""}`}
                   >
+                    <span className="size-1.5 rounded-full bg-current" />
                     {formatLabel(asset.status)}
                   </span>
                 </TableCell>
                 <TableCell>
                   <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${CONDITION_COLORS[asset.condition] ?? ""}`}
+                    className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${CONDITION_COLORS[asset.condition] ?? ""}`}
                   >
+                    <span className="size-1.5 rounded-full bg-current" />
                     {formatLabel(asset.condition)}
                   </span>
                 </TableCell>

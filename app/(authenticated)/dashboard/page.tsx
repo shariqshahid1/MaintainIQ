@@ -7,33 +7,35 @@ import {
   AlertTriangle,
   Wrench,
   CheckCircle2,
-  Clock,
   TrendingUp,
-  ArrowUpRight,
   CalendarClock,
   Plus,
-  ArrowDownRight,
   Activity,
 } from "lucide-react";
 import Link from "next/link";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { TechnicianWorkload } from "@/components/dashboard/technician-workload";
 import { PriorityDistribution } from "@/components/dashboard/priority-distribution";
+import { Reveal, RevealItem, RevealBlock } from "@/components/shared/motion";
 
 export default async function DashboardPage() {
   const user = await getAuthUser();
   if (!user) redirect("/sign-in");
+
+  // Compute time boundaries once (outside the query) using date arithmetic
+  // instead of Date.now(), which is forbidden inside render by React's purity rule.
+  const now = new Date();
+  const weekAhead = new Date(now);
+  weekAhead.setDate(now.getDate() + 7);
 
   const [
     totalAssets,
     operationalAssets,
     underMaintenanceAssets,
     outOfServiceAssets,
-    totalIssues,
     openIssues,
     resolvedToday,
     upcomingServices,
-    recentIssues,
     recentHistory,
     technicianStats,
     criticalIssues,
@@ -45,7 +47,6 @@ export default async function DashboardPage() {
       where: { isDeleted: false, status: "UNDER_MAINTENANCE" },
     }),
     db.asset.count({ where: { isDeleted: false, status: "OUT_OF_SERVICE" } }),
-    db.issue.count(),
     db.issue.count({
       where: { status: { notIn: ["RESOLVED", "CLOSED"] } },
     }),
@@ -61,15 +62,10 @@ export default async function DashboardPage() {
       where: {
         isDeleted: false,
         nextServiceDate: {
-          gte: new Date(),
-          lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          gte: now,
+          lte: weekAhead,
         },
       },
-    }),
-    db.issue.findMany({
-      take: 5,
-      orderBy: { createdAt: "desc" },
-      include: { asset: true, reportedBy: true },
     }),
     db.historyEntry.findMany({
       take: 10,
@@ -143,7 +139,8 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 p-6 text-white shadow-xl shadow-indigo-500/20 sm:p-8">
+      <RevealBlock>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 p-6 text-white shadow-xl shadow-indigo-500/20 sm:p-8">
         <div className="absolute -right-10 -top-10 size-40 rounded-full bg-white/10" />
         <div className="absolute -bottom-10 -right-20 size-60 rounded-full bg-white/5" />
         <div className="relative">
@@ -170,13 +167,15 @@ export default async function DashboardPage() {
             </Link>
           </div>
         </div>
-      </div>
+        </div>
+      </RevealBlock>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <Reveal className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
-          <Link key={stat.title} href={stat.href}>
-            <Card className="group relative overflow-hidden transition-all hover:shadow-lg cursor-pointer border-0 shadow-sm">
+          <RevealItem key={stat.title}>
+            <Link href={stat.href}>
+              <Card className="group relative overflow-hidden transition-all hover:shadow-lg cursor-pointer border-0 shadow-sm">
               <CardContent className="p-5">
                 <div className="flex items-start justify-between">
                   <div>
@@ -205,12 +204,14 @@ export default async function DashboardPage() {
                 }}
               />
             </Card>
-          </Link>
+            </Link>
+          </RevealItem>
         ))}
-      </div>
+      </Reveal>
 
       {/* Secondary Stats */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      <RevealBlock>
+        <div className="grid gap-4 sm:grid-cols-3">
         <Card className="border-0 shadow-sm">
           <CardContent className="flex items-center gap-4 p-5">
             <div className="rounded-xl bg-emerald-100 p-3 dark:bg-emerald-900/30">
@@ -249,9 +250,11 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+      </RevealBlock>
 
       {/* Main Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <RevealBlock>
+        <div className="grid gap-6 lg:grid-cols-3">
         <Card className="border-0 shadow-sm lg:col-span-2">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
@@ -292,6 +295,7 @@ export default async function DashboardPage() {
           <PriorityDistribution counts={priorityCounts} />
         </div>
       </div>
+      </RevealBlock>
     </div>
   );
 }

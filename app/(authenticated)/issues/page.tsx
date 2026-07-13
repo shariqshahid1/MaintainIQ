@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { RevealBlock } from "@/components/shared/motion";
 import { redirect } from "next/navigation";
 import { getAuthUser } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -37,7 +38,7 @@ async function IssuesContent({ searchParams }: IssuesPageProps) {
 
 export default function IssuesPage(props: IssuesPageProps) {
   return (
-    <div className="space-y-6">
+    <RevealBlock className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Issues</h1>
         <p className="text-muted-foreground">
@@ -48,6 +49,6 @@ export default function IssuesPage(props: IssuesPageProps) {
       <Suspense fallback={<Skeleton className="h-96 w-full" />}>
         <IssuesContent searchParams={props.searchParams} />
       </Suspense>
-    </div>
+    </RevealBlock>
   );
 }
