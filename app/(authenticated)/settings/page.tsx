@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { User, Shield, Mail, Phone, Calendar, Tags, MapPin } from "lucide-react";
+import { Shield, Mail, Phone, Calendar, Tags, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import { RoleSwitcher, CategoryManager, LocationManager } from "@/components/settings/management";
 

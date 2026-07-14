@@ -190,6 +190,7 @@ export function IssueForm() {
               issueDescription={watch("description")}
               onAccept={(result) => {
                 setTriage(result);
+                // eslint-disable-next-line react-hooks/incompatible-library
                 if (!watch("title")) setValue("title", result.title);
                 setValue("priority", result.priority as IssueFormData["priority"]);
                 toast.success("AI suggestion applied");

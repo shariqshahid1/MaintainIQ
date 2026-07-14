@@ -8,7 +8,6 @@ import {
   ArrowRightLeft,
   Wrench,
   CheckCircle2,
-  AlertTriangle,
   UserPlus,
   XCircle,
 } from "lucide-react";
@@ -57,7 +56,7 @@ export function RecentActivity({ entries }: { entries: Entry[] }) {
 
   return (
     <div className="space-y-1">
-      {entries.map((entry, i) => {
+      {entries.map((entry) => {
         const { icon: ActionIcon, color } = getActionIcon(entry.action);
         return (
           <div

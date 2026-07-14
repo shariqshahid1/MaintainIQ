@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import { Upload, X, Loader2, ImageIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export interface UploadedAttachment {

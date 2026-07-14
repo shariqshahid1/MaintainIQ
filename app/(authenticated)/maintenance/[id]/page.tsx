@@ -4,13 +4,11 @@ import { db } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/issues/status-badge";
 import { PriorityBadge } from "@/components/issues/priority-badge";
 import {
   ArrowLeft,
-  Wrench,
   CalendarDays,
   User,
   Boxes,

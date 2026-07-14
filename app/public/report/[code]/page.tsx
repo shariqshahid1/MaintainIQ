@@ -58,6 +58,7 @@ export default function PublicReportPage({
     },
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const selectedPriority = watch("priority");
 
   async function onSubmit(data: PublicIssueFormData) {

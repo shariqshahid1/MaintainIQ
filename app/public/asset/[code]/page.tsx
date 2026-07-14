@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { STATUS_COLORS, CONDITION_COLORS } from "@/lib/constants";
-import { QrCode, AlertTriangle, MapPin, Calendar, Wrench, History } from "lucide-react";
+import { QrCode, AlertTriangle, MapPin, Calendar, History } from "lucide-react";
 import { format } from "date-fns";
 import { Aurora } from "@/components/shared/aurora";
 

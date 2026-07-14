@@ -25,18 +25,29 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const stored = await getStorage().save(buffer, file.name, file.type);
+  try {
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const stored = await getStorage().save(buffer, file.name);
 
-  const attachment = await db.attachment.create({
-    data: {
-      fileName: stored.fileName,
-      fileUrl: stored.url,
-      fileSize: file.size,
-      mimeType: file.type,
-    },
-    select: { id: true, fileUrl: true, fileName: true },
-  });
+    const attachment = await db.attachment.create({
+      data: {
+        fileName: stored.fileName,
+        fileUrl: stored.url,
+        fileSize: file.size,
+        mimeType: file.type,
+      },
+      select: { id: true, fileUrl: true, fileName: true },
+    });
 
-  return NextResponse.json(attachment, { status: 201 });
+    return NextResponse.json(attachment, { status: 201 });
+  } catch (error) {
+    console.error("Upload failed:", error);
+    return NextResponse.json(
+      {
+        error:
+          "File upload is temporarily unavailable. You can continue without an attachment or try again later.",
+      },
+      { status: 503 },
+    );
+  }
 }

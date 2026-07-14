@@ -20,7 +20,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ASSET_STATUSES, ASSET_CONDITIONS } from "@/lib/constants";
 import { ArrowLeft, Save, Loader2 } from "lucide-react";
-import Link from "next/link";
 
 interface Category {
   id: string;
@@ -110,6 +109,7 @@ export function AssetForm({
     },
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const watchStatus = watch("status");
   const watchCondition = watch("condition");
 

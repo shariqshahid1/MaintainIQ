@@ -21,11 +21,9 @@ import {
   Wrench,
   AlertTriangle,
   Clock,
-  Activity,
   HeartPulse,
   TrendingDown,
 } from "lucide-react";
-import type { Metadata } from "next";
 import { deleteAsset } from "@/actions/assets";
 import { QrPreview } from "@/components/assets/qr-preview";
 

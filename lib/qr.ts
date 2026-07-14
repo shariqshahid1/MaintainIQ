@@ -1,6 +1,9 @@
 import QRCode from "qrcode";
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_APP_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "") ||
+  "http://localhost:3000";
 
 export async function generateQrCode(assetCode: string): Promise<string> {
   const publicUrl = `${BASE_URL}/public/asset/${assetCode}`;

@@ -16,7 +16,7 @@ export interface StoredFile {
 }
 
 export interface StorageProvider {
-  save(buffer: Buffer, originalName: string, mimeType: string): Promise<StoredFile>;
+  save(buffer: Buffer, originalName: string): Promise<StoredFile>;
 }
 
 const PUBLIC_DIR = path.join(process.cwd(), "public");
@@ -42,7 +42,7 @@ export function assertValidUpload(mimeType: string, size: number) {
 }
 
 class LocalDiskStorage implements StorageProvider {
-  async save(buffer: Buffer, originalName: string, mimeType: string): Promise<StoredFile> {
+  async save(buffer: Buffer, originalName: string): Promise<StoredFile> {
     await fs.mkdir(UPLOAD_DIR, { recursive: true });
     const ext = path.extname(originalName) || ".bin";
     const key = `${randomUUID()}${ext}`;
