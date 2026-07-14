@@ -17,6 +17,7 @@ import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { TechnicianWorkload } from "@/components/dashboard/technician-workload";
 import { PriorityDistribution } from "@/components/dashboard/priority-distribution";
 import { Reveal, RevealItem, RevealBlock } from "@/components/shared/motion";
+import { AnimatedCounter } from "@/components/shared/counter";
 
 export default async function DashboardPage() {
   const user = await getAuthUser();
@@ -175,16 +176,17 @@ export default async function DashboardPage() {
         {stats.map((stat) => (
           <RevealItem key={stat.title}>
             <Link href={stat.href}>
-              <Card className="group relative overflow-hidden transition-all hover:shadow-lg cursor-pointer border-0 shadow-sm">
+              <Card className="group relative overflow-hidden border-0 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer">
               <CardContent className="p-5">
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">
                       {stat.title}
                     </p>
-                    <p className="mt-2 text-3xl font-bold tracking-tight">
-                      {stat.value}
-                    </p>
+                    <AnimatedCounter
+                      value={stat.value}
+                      className="mt-2 block text-3xl font-bold tracking-tight tabular-nums"
+                    />
                     {stat.badge && (
                       <span className="mt-2 inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400">
                         {stat.badge}
@@ -198,11 +200,7 @@ export default async function DashboardPage() {
                   </div>
                 </div>
               </CardContent>
-              <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r opacity-0 transition-opacity group-hover:opacity-100"
-                style={{
-                  backgroundImage: `linear-gradient(to right, var(--tw-gradient-stops))`,
-                }}
-              />
+              <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </Card>
             </Link>
           </RevealItem>
@@ -212,18 +210,21 @@ export default async function DashboardPage() {
       {/* Secondary Stats */}
       <RevealBlock>
         <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="border-0 shadow-sm">
+        <Card className="group border-0 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
           <CardContent className="flex items-center gap-4 p-5">
             <div className="rounded-xl bg-emerald-100 p-3 dark:bg-emerald-900/30">
               <TrendingUp className="size-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Resolved Today</p>
-              <p className="text-2xl font-bold">{resolvedToday}</p>
+              <AnimatedCounter
+                value={resolvedToday}
+                className="block text-2xl font-bold tabular-nums"
+              />
             </div>
           </CardContent>
         </Card>
-        <Card className="border-0 shadow-sm">
+        <Card className="group border-0 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
           <CardContent className="flex items-center gap-4 p-5">
             <div className="rounded-xl bg-orange-100 p-3 dark:bg-orange-900/30">
               <CalendarClock className="size-5 text-orange-600 dark:text-orange-400" />
@@ -232,11 +233,14 @@ export default async function DashboardPage() {
               <p className="text-sm text-muted-foreground">
                 Upcoming Services
               </p>
-              <p className="text-2xl font-bold">{upcomingServices}</p>
+              <AnimatedCounter
+                value={upcomingServices}
+                className="block text-2xl font-bold tabular-nums"
+              />
             </div>
           </CardContent>
         </Card>
-        <Card className="border-0 shadow-sm">
+        <Card className="group border-0 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
           <CardContent className="flex items-center gap-4 p-5">
             <div className="rounded-xl bg-purple-100 p-3 dark:bg-purple-900/30">
               <Activity className="size-5 text-purple-600 dark:text-purple-400" />
@@ -245,7 +249,10 @@ export default async function DashboardPage() {
               <p className="text-sm text-muted-foreground">
                 Out of Service
               </p>
-              <p className="text-2xl font-bold">{outOfServiceAssets}</p>
+              <AnimatedCounter
+                value={outOfServiceAssets}
+                className="block text-2xl font-bold tabular-nums"
+              />
             </div>
           </CardContent>
         </Card>
