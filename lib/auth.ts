@@ -1,6 +1,6 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
-import type { UserRole } from "@/app/generated/prisma/client";
+import { Prisma, type UserRole } from "@/app/generated/prisma/client";
 
 const VALID_ROLES: readonly UserRole[] = [
   "ADMINISTRATOR",
@@ -23,25 +23,54 @@ export async function getAuthUser() {
   const { userId } = await auth();
   if (!userId) return null;
 
-  let user = await db.user.findUnique({ where: { clerkId: userId } });
+  // Fast path: a DB record already linked to this Clerk account.
+  const existingByClerk = await db.user.findUnique({
+    where: { clerkId: userId },
+  });
+  if (existingByClerk) return existingByClerk;
 
-  if (!user) {
-    const clerkUser = await currentUser();
-    if (!clerkUser) return null;
+  const clerkUser = await currentUser();
+  if (!clerkUser) return null;
 
-    user = await db.user.create({
+  const email = clerkUser.emailAddresses[0]?.emailAddress ?? "";
+  const profile = {
+    firstName: clerkUser.firstName,
+    lastName: clerkUser.lastName,
+    avatarUrl: clerkUser.imageUrl,
+  };
+
+  // A record with this email may already exist (e.g. seeded/demo users) but
+  // without a linked clerkId. Rather than failing on the unique(email)
+  // constraint, attach the Clerk id to that record and keep its existing role.
+  if (email) {
+    const existingByEmail = await db.user.findUnique({ where: { email } });
+    if (existingByEmail) {
+      return db.user.update({
+        where: { id: existingByEmail.id },
+        data: { clerkId: userId, ...profile },
+      });
+    }
+  }
+
+  try {
+    return await db.user.create({
       data: {
         clerkId: userId,
-        email: clerkUser.emailAddresses[0]?.emailAddress ?? "",
-        firstName: clerkUser.firstName,
-        lastName: clerkUser.lastName,
-        avatarUrl: clerkUser.imageUrl,
+        email,
+        ...profile,
         role: roleFromClerkMetadata(clerkUser.publicMetadata),
       },
     });
+  } catch (error) {
+    // Concurrent sign-in may have created the account between our lookups.
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return db.user.findUnique({ where: { clerkId: userId } });
+    }
+    throw error;
   }
-
-  return user;
 }
 
 export async function requireAuth() {
